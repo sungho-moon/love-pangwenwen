@@ -1067,7 +1067,10 @@
         radial-gradient(circle at 20% 30%,rgba(192,72,81,.16),transparent 26%),
         radial-gradient(circle at 80% 70%,rgba(212,175,55,.16),transparent 28%),
         conic-gradient(from 90deg at 50% 50%,transparent,rgba(230,194,128,.12),transparent,rgba(192,72,81,.1),transparent);
-      animation:slow-turn 30s linear infinite;
+      animation:slow-turn 46s linear infinite;
+    }
+    .act4{
+      padding-bottom:clamp(36px,5vh,68px);
     }
     .act5:before{
       background:
@@ -1222,12 +1225,12 @@
       transform:translateX(-80%);
     }
     .act4.active .metric-card{
-      animation:metric-float 4.2s ease-in-out infinite;
+      animation:metric-float 7.8s ease-in-out infinite;
       animation-delay:calc(var(--i,0) * .22s);
     }
     .act4.active .metric-card:before{
-      animation:data-scan 2.8s ease-in-out infinite;
-      animation-delay:calc(var(--i,0) * .18s);
+      animation:data-scan 7.2s ease-in-out infinite;
+      animation-delay:calc(var(--i,0) * .52s);
     }
     .metric-card:nth-child(1){--i:0}
     .metric-card:nth-child(2){--i:1}
@@ -1403,6 +1406,9 @@
       margin:10px auto 0;
       background:linear-gradient(var(--gold),transparent);
       animation:fall 1.8s ease-in-out infinite;
+    }
+    .act4 .scroll-note{
+      display:none;
     }
 
     @keyframes pulse{
@@ -3238,13 +3244,13 @@
     function drawConstellationField(now) {
       if (stage !== 3) return;
       const t = now * .001;
-      const total = fxCount(22, 38);
+      const total = fxCount(14, 26);
       const pts = [];
       for (let i = 0; i < total; i++) {
         const u = (Math.sin(i * 12.9898) * 43758.5453) % 1;
         const v = (Math.sin(i * 78.233) * 24634.6345) % 1;
-        const x = ((u + 1) % 1) * W + Math.sin(t * .6 + i) * 16;
-        const y = ((v + 1) % 1) * H + Math.cos(t * .52 + i * 1.7) * 12;
+        const x = ((u + 1) % 1) * W + Math.sin(t * .24 + i) * 9;
+        const y = ((v + 1) % 1) * H + Math.cos(t * .22 + i * 1.7) * 7;
         pts.push([x, y, i]);
       }
       ctx.save();
@@ -3256,7 +3262,7 @@
           const d = Math.hypot(dx, dy);
           const max = 148;
           if (d < max) {
-            const a = (1 - d / max) * (.16 + .08 * Math.sin(t * 2 + i));
+            const a = (1 - d / max) * (.09 + .035 * Math.sin(t * .65 + i));
             ctx.strokeStyle = i % 3 ? `rgba(230,194,128,${a})` : `rgba(192,72,81,${a * .9})`;
             ctx.lineWidth = .55;
             ctx.beginPath();
@@ -3267,9 +3273,9 @@
         }
       }
       for (const p of pts) {
-        const glow = .38 + .32 * Math.sin(t * 3 + p[2]);
+        const glow = .22 + .14 * Math.sin(t * .8 + p[2]);
         ctx.fillStyle = p[2] % 4 ? `rgba(230,194,128,${glow})` : `rgba(255,157,164,${glow})`;
-        ctx.shadowBlur = 12;
+        ctx.shadowBlur = 8;
         ctx.shadowColor = p[2] % 4 ? "#d4af37" : "#c04851";
         ctx.beginPath();
         ctx.arc(p[0], p[1], p[2] % 7 === 0 ? 2.1 : 1.15, 0, TAU);
@@ -3494,7 +3500,7 @@
             Math.sin(n * 227 + t * 3.4) * .045;
           const tremble =
             stage === 1 ? Math.sin(n * 13 + t * 5.2) * .08 :
-            stage === 3 ? Math.sin(n * 328 + t * 8.2) * .035 :
+            stage === 3 ? Math.sin(n * 108 + t * 2.8) * .018 :
             stage === 4 ? Math.sin(n * 6 + t * 3.6) * .12 :
             stage === 5 ? Math.sin(n * 88 - t * 4.2) * .045 : 0;
           const y = yBase + offset + (voice + tremble) * env * spread * intensity;
@@ -3515,11 +3521,11 @@
       }
 
       if (stage >= 2) {
-        const sparkleCount = stage === 3 ? fxCount(76, 76) : stage === 5 ? fxCount(62, 62) : fxCount(38, 38);
+        const sparkleCount = stage === 3 ? fxCount(24, 24) : stage === 5 ? fxCount(62, 62) : fxCount(38, 38);
         for (let i = 0; i < sparkleCount; i++) {
           const x = (Math.sin(i * 12.989 + t * .13) * 43758.5453 % 1 + 1) % 1 * W;
           const y = (Math.sin(i * 78.233 + t * .17) * 24634.6345 % 1 + 1) % 1 * H;
-          const a = .1 + (stage === 3 ? .32 : .2) * Math.sin(t * 2 + i);
+          const a = stage === 3 ? (.055 + .08 * Math.sin(t * .8 + i)) : (.1 + .2 * Math.sin(t * 2 + i));
           wctx.fillStyle = `rgba(230,194,128,${a})`;
           wctx.fillRect(x, y, 1.2, 1.2);
         }
