@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
@@ -1557,29 +1557,27 @@
       .story-card,
       .final-card{
         padding:22px 20px;
-        backdrop-filter:none;
+        backdrop-filter:blur(9px);
       }
-      .orientation-card,
-      .metric-card,
-      .voice-caption{
-        backdrop-filter:none;
-      }
+      .orientation-card{backdrop-filter:blur(18px)}
+      .metric-card{backdrop-filter:blur(10px)}
+      .voice-caption{backdrop-filter:blur(12px)}
       .aurora{
-        opacity:.28;
+        opacity:.42;
       }
       body[data-stage="1"] .aurora,
       body[data-stage="2"] .aurora,
       body[data-stage="3"] .aurora,
       body[data-stage="4"] .aurora,
       body[data-stage="5"] .aurora{
-        opacity:.38;
+        opacity:.78;
       }
       .grain{
         opacity:.035;
       }
       .portrait-card{
-        animation-duration:7.8s;
-        filter:saturate(.78) contrast(1.02);
+        animation-duration:5.6s;
+        filter:saturate(.82) contrast(1.06);
       }
       .voice-label{
         bottom:10px;
@@ -1909,12 +1907,10 @@
     body.landscape-simulated .story-card,
     body.landscape-simulated .final-card{
       padding:13px 16px;
-      backdrop-filter:none;
+      backdrop-filter:blur(9px);
     }
-    body.landscape-simulated .metric-card,
-    body.landscape-simulated .voice-caption{
-      backdrop-filter:none;
-    }
+    body.landscape-simulated .metric-card{backdrop-filter:blur(10px)}
+    body.landscape-simulated .voice-caption{backdrop-filter:blur(12px)}
     body.landscape-simulated .story-copy,
     body.landscape-simulated .final-card .story-copy{
       font-size:11px;
@@ -2211,8 +2207,8 @@
     const coarsePointer = matchMedia("(pointer:coarse)").matches;
     const isMobile = matchMedia("(max-width:760px), (max-height:520px) and (pointer:coarse)").matches;
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const COUNT = reduced ? (isMobile ? 640 : 1150) : (isMobile ? 1250 : 2800);
-    const FX = reduced ? .45 : (isMobile ? .58 : .78);
+    const COUNT = reduced ? 1150 : 2800;
+    const FX = reduced ? .45 : .78;
     const TAU = Math.PI * 2;
     const RED = [192, 72, 81];
     const GOLD = [212, 175, 55];
@@ -2281,7 +2277,7 @@
     const lerp = (a, b, t) => a + (b - a) * t;
     const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
     const color = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
-    const fxCount = (mobile, desktop) => Math.max(1, Math.round((isMobile ? mobile : desktop) * FX));
+    const fxCount = (mobile, desktop) => Math.max(1, Math.round(desktop * FX));
 
     function setBgmButtonState() {
       bgmButtons.forEach(btn => {
@@ -2756,7 +2752,7 @@
       const simulated = body.classList.contains("landscape-simulated");
       W = simulated ? (stageShell.clientWidth || innerHeight) : innerWidth;
       H = simulated ? (stageShell.clientHeight || innerWidth) : innerHeight;
-      DPR = Math.min(devicePixelRatio || 1, reduced ? .95 : (isMobile ? 1.05 : 1.25));
+      DPR = Math.min(devicePixelRatio || 1, reduced ? .95 : 1.25);
 
       field.width = Math.floor(W * DPR);
       field.height = Math.floor(H * DPR);
@@ -2779,7 +2775,7 @@
       perfAvg = perfAvg * .96 + (dt * 16.67) * .04;
       if (now - lastPerfTune < 900) return;
       lastPerfTune = now;
-      const minCount = Math.max(420, Math.floor(COUNT * (isMobile ? .5 : .58)));
+      const minCount = Math.max(620, Math.floor(COUNT * .58));
       if (perfAvg > 28 && activeCount > minCount) {
         activeCount = Math.max(minCount, Math.floor(activeCount * .86));
       } else if (perfAvg < 18.5 && activeCount < COUNT) {
@@ -2821,7 +2817,7 @@
         y: Math.random() * H,
         phase: Math.random() * TAU,
         speed: .12 + Math.random() * .22,
-        size: (isMobile ? 9 : 11) + Math.random() * (isMobile ? 4 : 7),
+        size: 11 + Math.random() * 7,
         tint: i % 3 === 0 ? GOLD : i % 3 === 1 ? RED : [230, 194, 128]
       }));
     }
@@ -2854,7 +2850,7 @@
       const g = c.getContext("2d", { willReadFrequently: true });
       c.width = Math.max(720, Math.floor(W * 1.08));
       c.height = Math.max(310, Math.floor(H * .44));
-      const fontSize = Math.min(isMobile ? W * .23 : W * .16, isMobile ? 100 : 188);
+      const fontSize = Math.min(W * .16, 188);
 
       g.clearRect(0, 0, c.width, c.height);
       g.textAlign = "center";
@@ -2867,7 +2863,7 @@
 
       const data = g.getImageData(0, 0, c.width, c.height).data;
       const pts = [];
-      const step = isMobile ? 5 : 4;
+      const step = 4;
       for (let y = 0; y < c.height; y += step) {
         for (let x = 0; x < c.width; x += step) {
           if (data[(y * c.width + x) * 4 + 3] > 90) {
@@ -2879,7 +2875,7 @@
     }
 
     function emitStamp(x, y) {
-      if (stamps.length > (isMobile ? 18 : 36)) return;
+      if (stamps.length > 36) return;
       stamps.push({
         x: x + (Math.random() - .5) * 22,
         y: y + (Math.random() - .5) * 18,
@@ -2983,8 +2979,8 @@
         s.vx *= .985;
         s.vy = s.vy * .985 + .018 * dt;
         ctx.fillStyle = color(s.tint, Math.max(0, s.life));
-        ctx.shadowBlur = isMobile ? 0 : 10;
-        if (!isMobile) ctx.shadowColor = s.tint === GOLD ? "#d4af37" : "#c04851";
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = s.tint === GOLD ? "#d4af37" : "#c04851";
         ctx.fillRect(s.x, s.y, s.size, s.size);
         if (s.life <= 0) sparks.splice(i, 1);
       }
@@ -3010,8 +3006,8 @@
         ctx.fill();
         ctx.strokeStyle = color(w.tint, .38 * a);
         ctx.lineWidth = 1 + 2.4 * a;
-        ctx.shadowBlur = isMobile ? 0 : 20;
-        if (!isMobile) ctx.shadowColor = w.tint === GOLD ? "#d4af37" : "#c04851";
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = w.tint === GOLD ? "#d4af37" : "#c04851";
         ctx.beginPath();
         ctx.arc(w.x, w.y, w.r * .72, 0, TAU);
         ctx.stroke();
@@ -3044,8 +3040,8 @@
         grad.addColorStop(1, "rgba(255,246,204,.9)");
         ctx.strokeStyle = grad;
         ctx.lineWidth = stage >= 2 ? 1.25 : .8;
-        ctx.shadowBlur = isMobile ? 0 : (stage >= 2 ? 16 : 8);
-        if (!isMobile) ctx.shadowColor = tint === RED ? "#c04851" : "#d4af37";
+        ctx.shadowBlur = stage >= 2 ? 16 : 8;
+        ctx.shadowColor = tint === RED ? "#c04851" : "#d4af37";
         ctx.beginPath();
         ctx.moveTo(x2, y2);
         ctx.lineTo(c.x, c.y);
@@ -3069,8 +3065,8 @@
         const a = base * (.35 + pulse);
         ctx.font = `500 ${g.size}px "Noto Serif CJK SC","Songti SC",serif`;
         ctx.fillStyle = color(g.tint, a);
-        ctx.shadowBlur = isMobile ? 0 : 12;
-        if (!isMobile) ctx.shadowColor = g.tint === RED ? "#c04851" : "#d4af37";
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = g.tint === RED ? "#c04851" : "#d4af37";
         ctx.fillText(g.text, g.x + driftX, g.y + driftY);
       }
       ctx.restore();
@@ -3097,8 +3093,8 @@
         }
         ctx.strokeStyle = ring % 2 ? "rgba(192,72,81,.22)" : "rgba(230,194,128,.28)";
         ctx.lineWidth = ring === 0 ? 1.8 : .9;
-        ctx.shadowBlur = isMobile ? 0 : 18;
-        if (!isMobile) ctx.shadowColor = ring % 2 ? "#c04851" : "#d4af37";
+        ctx.shadowBlur = 18;
+        ctx.shadowColor = ring % 2 ? "#c04851" : "#d4af37";
         ctx.stroke();
       }
       for (let i = 0; i < fxCount(18, 28); i++) {
@@ -3143,7 +3139,7 @@
           const dx = pts[i][0] - pts[j][0];
           const dy = pts[i][1] - pts[j][1];
           const d = Math.hypot(dx, dy);
-          const max = isMobile ? 118 : 148;
+          const max = 148;
           if (d < max) {
             const a = (1 - d / max) * (.16 + .08 * Math.sin(t * 2 + i));
             ctx.strokeStyle = i % 3 ? `rgba(230,194,128,${a})` : `rgba(192,72,81,${a * .9})`;
@@ -3158,8 +3154,8 @@
       for (const p of pts) {
         const glow = .38 + .32 * Math.sin(t * 3 + p[2]);
         ctx.fillStyle = p[2] % 4 ? `rgba(230,194,128,${glow})` : `rgba(255,157,164,${glow})`;
-        ctx.shadowBlur = isMobile ? 0 : 12;
-        if (!isMobile) ctx.shadowColor = p[2] % 4 ? "#d4af37" : "#c04851";
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = p[2] % 4 ? "#d4af37" : "#c04851";
         ctx.beginPath();
         ctx.arc(p[0], p[1], p[2] % 7 === 0 ? 2.1 : 1.15, 0, TAU);
         ctx.fill();
@@ -3180,8 +3176,8 @@
         const cx = lerp(left[0], right[0], p);
         const cy = lerp(left[1], right[1], p) - yLift;
         ctx.fillStyle = k % 2 ? "rgba(192,72,81,.55)" : "rgba(230,194,128,.65)";
-        ctx.shadowBlur = isMobile ? 0 : 15;
-        if (!isMobile) ctx.shadowColor = k % 2 ? "#c04851" : "#d4af37";
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = k % 2 ? "#c04851" : "#d4af37";
         ctx.beginPath();
         ctx.arc(cx, cy, 1.7 + 1.8 * Math.sin(p * Math.PI), 0, TAU);
         ctx.fill();
@@ -3194,8 +3190,8 @@
         grad.addColorStop(1, "rgba(212,175,55,.05)");
         ctx.strokeStyle = grad;
         ctx.lineWidth = arc === 1 ? 1.6 : .75;
-        ctx.shadowBlur = isMobile ? 0 : 18;
-        if (!isMobile) ctx.shadowColor = "#d4af37";
+        ctx.shadowBlur = 18;
+        ctx.shadowColor = "#d4af37";
         ctx.beginPath();
         ctx.moveTo(left[0], left[1]);
         ctx.bezierCurveTo(W * .38, H * .38 - lift, W * .62, H * .66 + lift * .28, right[0], right[1]);
@@ -3235,8 +3231,8 @@
         }
         ctx.strokeStyle = ring % 2 ? "rgba(192,72,81,.18)" : "rgba(230,194,128,.24)";
         ctx.lineWidth = ring === 3 ? 1.5 : .75;
-        ctx.shadowBlur = isMobile ? 0 : 16;
-        if (!isMobile) ctx.shadowColor = ring % 2 ? "#c04851" : "#d4af37";
+        ctx.shadowBlur = 16;
+        ctx.shadowColor = ring % 2 ? "#c04851" : "#d4af37";
         ctx.stroke();
       }
       ctx.textAlign = "center";
@@ -3249,8 +3245,8 @@
         ctx.translate(cx + Math.cos(a) * base * .78, cy + Math.sin(a) * base * .78);
         ctx.rotate(a + Math.PI / 2);
         ctx.fillStyle = i % 2 ? "rgba(255,183,184,.35)" : "rgba(230,194,128,.42)";
-        ctx.shadowBlur = isMobile ? 0 : 14;
-        if (!isMobile) ctx.shadowColor = i % 2 ? "#c04851" : "#d4af37";
+        ctx.shadowBlur = 14;
+        ctx.shadowColor = i % 2 ? "#c04851" : "#d4af37";
         ctx.fillText(words[i], 0, 0);
         ctx.restore();
       }
@@ -3373,7 +3369,7 @@
       for (let layer = 0; layer < 3; layer++) {
         const offset = (layer - 1) * (stage === 1 ? 34 : 18);
         wctx.beginPath();
-        for (let x = 0; x <= W; x += isMobile ? 5 : 3) {
+        for (let x = 0; x <= W; x += 3) {
           const n = x / W;
           const env = Math.pow(Math.sin(Math.PI * n), .72);
           const voice =
@@ -3398,13 +3394,13 @@
         grad.addColorStop(1, "rgba(212,175,55,0)");
         wctx.strokeStyle = grad;
         wctx.lineWidth = layer === 1 ? (stage >= 2 ? 1.65 : 1.3) : .65;
-        wctx.shadowBlur = isMobile ? 0 : (stage === 1 ? 18 : stage >= 2 ? 16 : 10);
-        if (!isMobile) wctx.shadowColor = layer === 0 ? "#c04851" : "#d4af37";
+        wctx.shadowBlur = stage === 1 ? 18 : stage >= 2 ? 16 : 10;
+        wctx.shadowColor = layer === 0 ? "#c04851" : "#d4af37";
         wctx.stroke();
       }
 
       if (stage >= 2) {
-        const sparkleCount = stage === 3 ? fxCount(38, 76) : stage === 5 ? fxCount(30, 62) : fxCount(18, 38);
+        const sparkleCount = stage === 3 ? fxCount(76, 76) : stage === 5 ? fxCount(62, 62) : fxCount(38, 38);
         for (let i = 0; i < sparkleCount; i++) {
           const x = (Math.sin(i * 12.989 + t * .13) * 43758.5453 % 1 + 1) % 1 * W;
           const y = (Math.sin(i * 78.233 + t * .17) * 24634.6345 % 1 + 1) % 1 * H;
@@ -3440,33 +3436,33 @@
       if (next === 1) {
         animateDays();
         addShockwave(W / 2, H / 2, GOLD, 1.15);
-        emitSpark(W / 2, H / 2, isMobile ? 42 : 82, GOLD);
+        emitSpark(W / 2, H / 2, 82, GOLD);
       }
       if (next >= 2) {
         addShockwave(W / 2, H * .46, RED, 1.35);
         addShockwave(W / 2, H * .46, GOLD, 1.75);
-        emitSpark(W / 2, H * .46, isMobile ? 60 : 130, GOLD);
+        emitSpark(W / 2, H * .46, 130, GOLD);
       }
       if (next === 2) {
         addShockwave(W / 2, H * .46, GOLD, 2.4);
-        emitSpark(W / 2, H * .46, isMobile ? 110 : 220, RED);
+        emitSpark(W / 2, H * .46, 220, RED);
       }
       if (next === 3) {
         for (let i = 0; i < 4; i++) {
           addShockwave(W * (.2 + i * .2), H * (.32 + (i % 2) * .28), i % 2 ? RED : GOLD, 1.05);
         }
-        emitSpark(W / 2, H * .5, isMobile ? 120 : 240, GOLD);
+        emitSpark(W / 2, H * .5, 240, GOLD);
       }
       if (next === 4) {
         addShockwave(W * .27, H * .55, RED, 1.35);
         addShockwave(W * .73, H * .45, GOLD, 1.35);
-        emitSpark(W * .27, H * .55, isMobile ? 54 : 110, RED);
-        emitSpark(W * .73, H * .45, isMobile ? 54 : 110, GOLD);
+        emitSpark(W * .27, H * .55, 110, RED);
+        emitSpark(W * .73, H * .45, 110, GOLD);
       }
       if (next === 5) {
         addShockwave(W / 2, H * .5, GOLD, 2.85);
         addShockwave(W / 2, H * .5, RED, 2.1);
-        emitSpark(W / 2, H * .5, isMobile ? 140 : 280, GOLD);
+        emitSpark(W / 2, H * .5, 280, GOLD);
       }
       playVoiceForStage(next, false);
       if (next === 0) {
