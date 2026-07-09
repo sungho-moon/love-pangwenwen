@@ -2262,6 +2262,7 @@
     let voiceSource = null;
     let voiceGain = null;
     let voiceObjectUrl = null;
+    const voiceAudios = new Set();
     let voiceCaptionTimer = 0;
     let lastVoiceStage = -1;
     let voiceAwaitingGesture = false;
@@ -2584,6 +2585,14 @@
     }
 
     function stopVoice() {
+      voiceAudios.forEach(media => {
+        media.onplay = null;
+        media.onended = null;
+        media.onerror = null;
+        try { media.pause(); } catch (error) {}
+        try { media.currentTime = 0; } catch (error) {}
+      });
+      voiceAudios.clear();
       if (voiceAudio) {
         voiceAudio.onplay = null;
         voiceAudio.onended = null;
@@ -2610,6 +2619,7 @@
 
     function setupVoiceElement(src, track, runId, fromBlob = false) {
       const media = new Audio(src);
+      voiceAudios.add(media);
       media.preload = "auto";
       media.playsInline = true;
       const voiceLevel = track.level ?? 1;
@@ -2617,6 +2627,7 @@
       media.onplay = () => {
         if (runId !== voiceRunId) {
           try { media.pause(); } catch (error) {}
+          voiceAudios.delete(media);
           return;
         }
         voiceUnlocked = true;
@@ -2633,6 +2644,7 @@
           try { URL.revokeObjectURL(voiceObjectUrl); } catch (error) {}
           voiceObjectUrl = null;
         }
+        voiceAudios.delete(media);
       };
       return media;
     }
@@ -2640,6 +2652,7 @@
     async function playPreparedVoice(media, runId) {
       if (runId !== voiceRunId) {
         try { media.pause(); } catch (error) {}
+        voiceAudios.delete(media);
         throw new Error("voice-cancelled");
       }
       voiceAudio = media;
@@ -2667,6 +2680,7 @@
       });
       if (runId !== voiceRunId) {
         try { media.pause(); } catch (error) {}
+        voiceAudios.delete(media);
         throw new Error("voice-cancelled");
       }
     }
@@ -2736,6 +2750,7 @@
 
     function tryVoiceAutoplay() {
       if (voiceAutoplayTried) return;
+      if (!body.classList.contains("intro-complete")) return;
       voiceAutoplayTried = true;
       playVoiceForStage(stage, true);
     }
