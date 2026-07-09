@@ -2261,6 +2261,7 @@
     let voiceAudio = null;
     let voiceSource = null;
     let voiceGain = null;
+    let voiceObjectUrl = null;
     let voiceCaptionTimer = 0;
     let lastVoiceStage = -1;
     let voiceAwaitingGesture = false;
@@ -2587,10 +2588,75 @@
       voiceAudio.currentTime = 0;
       try { voiceSource?.disconnect(); } catch (error) {}
       try { voiceGain?.disconnect(); } catch (error) {}
+      if (voiceObjectUrl) {
+        try { URL.revokeObjectURL(voiceObjectUrl); } catch (error) {}
+        voiceObjectUrl = null;
+      }
       voiceSource = null;
       voiceGain = null;
       voiceAudio = null;
       duckBgm(false);
+    }
+
+    function setupVoiceElement(src, track, fromBlob = false) {
+      const media = new Audio(src);
+      media.preload = "auto";
+      media.playsInline = true;
+      const voiceLevel = track.level ?? 1;
+      media.volume = routeVoiceThroughPolishChain(media, voiceLevel) ? .78 : .52 * voiceLevel;
+      media.onplay = () => {
+        voiceUnlocked = true;
+        voiceAwaitingGesture = false;
+        duckBgm(true);
+        showVoiceCaption(track.caption, true);
+      };
+      media.onended = () => {
+        voiceAwaitingGesture = false;
+        duckBgm(false);
+        hideVoiceCaption();
+        if (fromBlob && voiceObjectUrl) {
+          try { URL.revokeObjectURL(voiceObjectUrl); } catch (error) {}
+          voiceObjectUrl = null;
+        }
+      };
+      return media;
+    }
+
+    async function playPreparedVoice(media) {
+      voiceAudio = media;
+      await new Promise((resolve, reject) => {
+        let settled = false;
+        const finish = () => {
+          if (settled) return;
+          settled = true;
+          media.onerror = null;
+          resolve();
+        };
+        const fail = () => {
+          if (settled) return;
+          settled = true;
+          media.onerror = null;
+          reject(new Error("media-error"));
+        };
+        media.onerror = fail;
+        const playResult = media.play();
+        if (playResult && typeof playResult.then === "function") {
+          playResult.then(finish).catch(reject);
+        } else {
+          finish();
+        }
+      });
+    }
+
+    async function fetchVoiceAsBlobUrl(src) {
+      const response = await fetch(src, { cache: "force-cache" });
+      if (!response.ok) throw new Error(`voice-fetch-${response.status}`);
+      const blob = await response.blob();
+      if (voiceObjectUrl) {
+        try { URL.revokeObjectURL(voiceObjectUrl); } catch (error) {}
+      }
+      voiceObjectUrl = URL.createObjectURL(blob);
+      return voiceObjectUrl;
     }
 
     async function playVoiceForStage(index, auto = false) {
@@ -2604,28 +2670,8 @@
       showVoiceCaption(track.caption, true);
       if (!audioCtx) makeAudioGraph();
       try { await audioCtx?.resume(); } catch (error) {}
-      voiceAudio = new Audio(track.src);
-      voiceAudio.preload = "auto";
-      const voiceLevel = track.level ?? 1;
-      voiceAudio.volume = routeVoiceThroughPolishChain(voiceAudio, voiceLevel) ? .78 : .52 * voiceLevel;
-      voiceAudio.onplay = () => {
-        voiceUnlocked = true;
-        voiceAwaitingGesture = false;
-        duckBgm(true);
-        showVoiceCaption(track.caption, true);
-      };
-      voiceAudio.onended = () => {
-        voiceAwaitingGesture = false;
-        duckBgm(false);
-        hideVoiceCaption();
-      };
-      voiceAudio.onerror = () => {
-        voiceAwaitingGesture = false;
-        duckBgm(false);
-        showVoiceCaption(`配音文件待放入：${track.src}`);
-      };
       try {
-        await voiceAudio.play();
+        await playPreparedVoice(setupVoiceElement(track.src, track));
         voiceUnlocked = true;
         voiceAwaitingGesture = false;
       } catch (error) {
@@ -2638,8 +2684,18 @@
           voiceAwaitingGesture = true;
           showVoiceCaption("浏览器拦截了配音，再点一下页面即可解锁。");
         } else {
-          voiceAwaitingGesture = false;
-          showVoiceCaption(`配音文件待放入：${track.src}`);
+          try {
+            stopVoice();
+            showVoiceCaption("正在切换兼容播放通道…", true);
+            const blobUrl = await fetchVoiceAsBlobUrl(track.src);
+            await playPreparedVoice(setupVoiceElement(blobUrl, track, true));
+            voiceUnlocked = true;
+            voiceAwaitingGesture = false;
+          } catch (fallbackError) {
+            voiceAwaitingGesture = false;
+            duckBgm(false);
+            showVoiceCaption("当前浏览器暂不支持这段配音格式，可换 Safari / Chrome 打开。");
+          }
         }
       }
     }
