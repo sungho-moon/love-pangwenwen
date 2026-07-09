@@ -1386,31 +1386,6 @@
       inset:0;
       background:radial-gradient(circle at 50% 42%,transparent 0 38%,rgba(8,8,10,.76) 82%);
     }
-    .scroll-note{
-      position:absolute;
-      z-index:4;
-      left:50%;
-      bottom:20px;
-      transform:translateX(-50%);
-      font-size:10px;
-      line-height:1;
-      letter-spacing:.28em;
-      color:rgba(255,255,255,.38);
-      white-space:nowrap;
-    }
-    .scroll-note:after{
-      content:"";
-      display:block;
-      width:1px;
-      height:22px;
-      margin:10px auto 0;
-      background:linear-gradient(var(--gold),transparent);
-      animation:fall 1.8s ease-in-out infinite;
-    }
-    .act4 .scroll-note{
-      display:none;
-    }
-
     @keyframes pulse{
       0%,100%{transform:scale(1);opacity:.95}
       50%{transform:scale(.72);opacity:.45}
@@ -1677,7 +1652,6 @@
         bottom:38px;
         font-size:12px;
       }
-      .scroll-note{display:none}
     }
     @media (max-width:900px) and (orientation:portrait){
       .orientation-card{padding:34px 26px}
@@ -1850,8 +1824,7 @@
         margin-bottom:8px;
         font-size:9px;
       }
-      .voice-label,
-      .scroll-note{
+      .voice-label{
         display:none;
       }
       .year-engine{
@@ -1990,8 +1963,7 @@
       height:1px;
       transform:none;
     }
-    body.landscape-simulated .voice-label,
-    body.landscape-simulated .scroll-note{
+    body.landscape-simulated .voice-label{
       display:none;
     }
     body.landscape-simulated .year-engine{
@@ -2010,7 +1982,6 @@
       .orbit:after,
       .hero-title h1,
       .status i,
-      .scroll-note:after,
       .act2:before{animation:none}
     }
   </style>
@@ -2086,7 +2057,6 @@
         </article>
       </div>
       <div class="voice-label reveal d4">那一年，电话里的声音，被时间悄悄保存成一条金色声纹。</div>
-      <div class="scroll-note">向下翻页 · 让高墙开始消融</div>
     </section>
 
     <section class="act2" id="melt" data-stage="1">
@@ -2112,7 +2082,6 @@
           <div class="red-thread" aria-hidden="true"></div>
         </div>
       </div>
-      <div class="scroll-note">继续向下 · 听见上林赋的回响</div>
     </section>
 
     <section class="act3" id="response" data-stage="2">
@@ -2139,7 +2108,7 @@
     <section class="act4" id="constellation" data-stage="3">
       <div class="wide-scene">
         <div class="kicker reveal">第四幕 · 聊天星图 · 3282 次闪烁</div>
-        <h2 class="reveal d1">聊天星图</h2>
+        <h2 class="reveal d1">不是突然靠近<br>是三千多次回声</h2>
         <div class="wide-copy reveal d2">
           <p>我把聊天记录拆成一片星空：每一句短短的“在干嘛”，每一个表情，每一次拍一拍，都不是无意义的噪声。</p>
           <p>它们像星点一样，慢慢把两个原本错开的轨道，照成了同一张图。</p>
@@ -2177,7 +2146,6 @@
           <div class="city"><div><b>无锡</b><span>“我在无锡也超想你呀。”</span></div></div>
         </div>
       </div>
-      <div class="scroll-note">继续 · 进入最后署名</div>
     </section>
 
     <section class="act6" id="flechazo" data-stage="5">
@@ -2244,7 +2212,7 @@
       { src: "voice/scene-1.m4a", caption: "第一幕：初三那年，我们曾经靠得很近。", level: .66 },
       { src: "voice/scene-2.m4a", caption: "第二幕：一年之后，红线终于越过高墙。", level: 1 },
       { src: "voice/scene-3.m4a", caption: "第三幕：字落上林，心有回响。", level: 1 },
-      { src: "voice/scene-4.m4a", caption: "第四幕：聊天星图慢慢显影。", level: 1 },
+      { src: "voice/scene-4.m4a", caption: "第四幕：不是突然靠近，是三千多次回声。", level: 1 },
       { src: "voice/scene-5.m4a", caption: "第五幕：距离没有把人推远，反而让想念有了坐标。", level: 1 },
       { src: "voice/scene-6.m4a", caption: "第六幕：Flechazo，原来名字早就写好了答案。", level: 1 }
     ];
