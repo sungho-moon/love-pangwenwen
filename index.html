@@ -2221,6 +2221,53 @@
     body.landscape-simulated .closing-sigil{
       width:118px;
     }
+    /* 右侧下滑提示基础样式（终极强引导版） */
+    .scroll-hint {
+      position: fixed;
+      right: clamp(14px, 3vw, 42px);
+      /* 强行抬升视觉重心，彻底避开全面屏底部的物理黑边或小白条 */
+      bottom: clamp(65px, 10vh, 95px);
+      z-index: 15;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      pointer-events: none;
+      transition: opacity .8s var(--ease), transform .8s var(--ease), visibility .8s;
+    }
+    
+    .scroll-hint span {
+      writing-mode: vertical-rl;
+      /* 字号拉大，直接击穿视觉盲区 */
+      font-size: 15px;
+      font-weight: bold;
+      letter-spacing: .35em;
+      color: rgba(255, 242, 218, 0.98); 
+      text-shadow: 0 0 16px rgba(212, 175, 55, 0.9), 0 0 6px rgba(255, 255, 255, 0.8);
+      animation: hint-float 2s ease-in-out infinite; 
+    }
+    
+    .hint-line {
+      /* 线宽与高度同步等比放大，维持UI比例平衡 */
+      width: 2.5px;
+      height: 54px;
+      background: linear-gradient(180deg, transparent, var(--gold-soft), #fff);
+      box-shadow: 0 0 14px rgba(212, 175, 55, 0.9);
+      animation: hint-fall 1.5s cubic-bezier(.22,1,.36,1) infinite;
+    }
+    
+    .scroll-hint::after {
+      content: "";
+      /* 物理箭头同步放大，增强指向性 */
+      width: 10px;
+      height: 10px;
+      margin-top: -8px;
+      border-right: 2.5px solid #fff;
+      border-bottom: 2.5px solid #fff;
+      transform: rotate(45deg);
+      box-shadow: 2px 2px 8px rgba(212, 175, 55, 0.8);
+      animation: arrow-pulse 1.5s ease-in-out infinite;
+    }
     @media (prefers-reduced-motion:reduce){
       html{scroll-behavior:auto}
       .reveal{transition-duration:.01s;filter:none}
@@ -2269,6 +2316,10 @@
   <nav class="rail" aria-label="章节进度">
     <span class="on"></span><span></span><span></span><span></span><span></span><span></span>
   </nav>
+  <div class="scroll-hint" aria-hidden="true">
+    <span>下滑翻页</span>
+    <div class="hint-line"></div>
+  </div>
 
   <main>
     <section class="act1 active" id="parallel" data-stage="0">
@@ -2455,7 +2506,7 @@
       "【最终署名完成：只回给庞雯文】"
     ];
     const VOICE_TRACKS = [
-      { src: "voice/scene-1.m4a", level: 0.6 },
+      { src: "voice/scene-1.m4a", level: 0.6},
       { src: "voice/scene-2.m4a", level: 0.8 },
       { src: "voice/scene-3.m4a", level: 0.8 },
       { src: "voice/scene-4.m4a", level: 0.8 },
