@@ -2929,7 +2929,6 @@
 
     async function playVoiceForStage(index, auto = false) {
       if (!voiceEnabled) return;
-      const track = VOICE_TRACKS[index];
       if (!track) return;
       if (!auto && !voiceUnlocked) return;
       if (lastVoiceStage === index && voiceAudio && !voiceAudio.paused) return;
