@@ -2455,12 +2455,12 @@
       "【最终署名完成：只回给庞雯文】"
     ];
     const VOICE_TRACKS = [
-      { src: "voice/scene-1.m4a", caption: "第一幕：初三那年，我们曾经靠得很近。", level: .66 },
-      { src: "voice/scene-2.m4a", caption: "第二幕：一年之后，红线终于越过高墙。", level: 1 },
-      { src: "voice/scene-3.m4a", caption: "第三幕：字落上林，心有回响。", level: 1 },
-      { src: "voice/scene-4.m4a", caption: "第四幕：不是突然靠近，是三千多次回声。", level: 1 },
-      { src: "voice/scene-5.m4a", caption: "第五幕：距离没有把人推远，反而让想念有了坐标。", level: 1 },
-      { src: "voice/scene-6.m4a", caption: "第六幕：Flechazo，原来名字早就写好了答案。", level: 1 }
+      { src: "voice/scene-1.m4a", level: 0.6 },
+      { src: "voice/scene-2.m4a", level: 0.8 },
+      { src: "voice/scene-3.m4a", level: 0.8 },
+      { src: "voice/scene-4.m4a", level: 0.8 },
+      { src: "voice/scene-5.m4a", level: 0.8 },
+      { src: "voice/scene-6.m4a", level: 0.8 }
     ];
 
     let W = innerWidth;
@@ -2736,7 +2736,7 @@
     }
 
     function showVoiceCaption(text, sticky = false) {
-      if (!voiceCaption) return;
+      if (!voiceCaption || !text) return;
       clearTimeout(voiceCaptionTimer);
       voiceCaption.textContent = text;
       voiceCaption.classList.add("on");
