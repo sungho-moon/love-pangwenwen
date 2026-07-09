@@ -1588,6 +1588,12 @@
         animation-duration:5.6s;
         filter:saturate(.82) contrast(1.06);
       }
+      .act4.active .metric-card,
+      .act4.active .metric-card:before,
+      .act4.active .portrait-card,
+      .act4:before{
+        animation:none;
+      }
       .voice-label{
         bottom:10px;
         width:86vw;
@@ -1954,6 +1960,12 @@
     body.landscape-simulated .portrait-card{
       width:54px;
     }
+    body.landscape-simulated .act4.active .metric-card,
+    body.landscape-simulated .act4.active .metric-card:before,
+    body.landscape-simulated .act4.active .portrait-card,
+    body.landscape-simulated .act4:before{
+      animation:none;
+    }
     body.landscape-simulated .portrait-card:nth-child(2){
       width:66px;
     }
@@ -2151,7 +2163,6 @@
           <div class="metric-card"><b>06.30</b><span>从 Flechazo 到庞雯文，名字正式点亮。</span></div>
         </div>
       </div>
-      <div class="scroll-note">继续 · 让星图连成红线</div>
     </section>
 
     <section class="act5" id="cities" data-stage="4">
@@ -3243,6 +3254,7 @@
 
     function drawConstellationField(now) {
       if (stage !== 3) return;
+      if (isMobile || body.classList.contains("landscape-simulated")) return;
       const t = now * .001;
       const total = fxCount(14, 26);
       const pts = [];
@@ -3479,7 +3491,8 @@
 
     function drawWave(now) {
       const t = now * .001;
-      const intensity = stage === 0 ? .78 : stage === 1 ? 1.65 : stage === 2 ? 1.45 : stage === 3 ? 1.28 : stage === 4 ? 1.55 : 1.18;
+      const calmAct4 = stage === 3 && (isMobile || body.classList.contains("landscape-simulated"));
+      const intensity = stage === 0 ? .78 : stage === 1 ? 1.65 : stage === 2 ? 1.45 : stage === 3 ? (calmAct4 ? .82 : 1.28) : stage === 4 ? 1.55 : 1.18;
       const yBase = stage === 0 ? H * .78 : stage === 1 ? H * .5 : stage === 4 ? H * .5 : stage === 5 ? H * .52 : H * .58;
       const spread = stage === 1 ? H * .22 : stage === 4 ? H * .18 : stage === 2 ? H * .16 : H * .13;
 
@@ -3500,7 +3513,7 @@
             Math.sin(n * 227 + t * 3.4) * .045;
           const tremble =
             stage === 1 ? Math.sin(n * 13 + t * 5.2) * .08 :
-            stage === 3 ? Math.sin(n * 108 + t * 2.8) * .018 :
+            stage === 3 ? (calmAct4 ? 0 : Math.sin(n * 108 + t * 2.8) * .018) :
             stage === 4 ? Math.sin(n * 6 + t * 3.6) * .12 :
             stage === 5 ? Math.sin(n * 88 - t * 4.2) * .045 : 0;
           const y = yBase + offset + (voice + tremble) * env * spread * intensity;
@@ -3521,7 +3534,7 @@
       }
 
       if (stage >= 2) {
-        const sparkleCount = stage === 3 ? fxCount(24, 24) : stage === 5 ? fxCount(62, 62) : fxCount(38, 38);
+        const sparkleCount = stage === 3 ? (calmAct4 ? 0 : fxCount(24, 24)) : stage === 5 ? fxCount(62, 62) : fxCount(38, 38);
         for (let i = 0; i < sparkleCount; i++) {
           const x = (Math.sin(i * 12.989 + t * .13) * 43758.5453 % 1 + 1) % 1 * W;
           const y = (Math.sin(i * 78.233 + t * .17) * 24634.6345 % 1 + 1) % 1 * H;
