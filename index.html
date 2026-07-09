@@ -2265,6 +2265,7 @@
     let voiceCaptionTimer = 0;
     let lastVoiceStage = -1;
     let voiceAwaitingGesture = false;
+    let voiceRunId = 0;
     let activeCount = COUNT;
     let perfAvg = 16.7;
     let lastPerfTune = 0;
@@ -2583,9 +2584,13 @@
     }
 
     function stopVoice() {
-      if (!voiceAudio) return;
-      voiceAudio.pause();
-      voiceAudio.currentTime = 0;
+      if (voiceAudio) {
+        voiceAudio.onplay = null;
+        voiceAudio.onended = null;
+        voiceAudio.onerror = null;
+        try { voiceAudio.pause(); } catch (error) {}
+        try { voiceAudio.currentTime = 0; } catch (error) {}
+      }
       try { voiceSource?.disconnect(); } catch (error) {}
       try { voiceGain?.disconnect(); } catch (error) {}
       if (voiceObjectUrl) {
@@ -2598,19 +2603,29 @@
       duckBgm(false);
     }
 
-    function setupVoiceElement(src, track, fromBlob = false) {
+    function cancelVoicePlayback() {
+      voiceRunId++;
+      stopVoice();
+    }
+
+    function setupVoiceElement(src, track, runId, fromBlob = false) {
       const media = new Audio(src);
       media.preload = "auto";
       media.playsInline = true;
       const voiceLevel = track.level ?? 1;
       media.volume = routeVoiceThroughPolishChain(media, voiceLevel) ? .78 : .52 * voiceLevel;
       media.onplay = () => {
+        if (runId !== voiceRunId) {
+          try { media.pause(); } catch (error) {}
+          return;
+        }
         voiceUnlocked = true;
         voiceAwaitingGesture = false;
         duckBgm(true);
         showVoiceCaption(track.caption, true);
       };
       media.onended = () => {
+        if (runId !== voiceRunId) return;
         voiceAwaitingGesture = false;
         duckBgm(false);
         hideVoiceCaption();
@@ -2622,7 +2637,11 @@
       return media;
     }
 
-    async function playPreparedVoice(media) {
+    async function playPreparedVoice(media, runId) {
+      if (runId !== voiceRunId) {
+        try { media.pause(); } catch (error) {}
+        throw new Error("voice-cancelled");
+      }
       voiceAudio = media;
       await new Promise((resolve, reject) => {
         let settled = false;
@@ -2646,6 +2665,10 @@
           finish();
         }
       });
+      if (runId !== voiceRunId) {
+        try { media.pause(); } catch (error) {}
+        throw new Error("voice-cancelled");
+      }
     }
 
     async function fetchVoiceAsBlobUrl(src) {
@@ -2665,33 +2688,44 @@
       if (!track) return;
       if (!auto && !voiceUnlocked) return;
       if (lastVoiceStage === index && voiceAudio && !voiceAudio.paused) return;
+      const runId = ++voiceRunId;
       stopVoice();
       lastVoiceStage = index;
       showVoiceCaption(track.caption, true);
       if (!audioCtx) makeAudioGraph();
       try { await audioCtx?.resume(); } catch (error) {}
+      if (runId !== voiceRunId) return;
       try {
-        await playPreparedVoice(setupVoiceElement(track.src, track));
+        await playPreparedVoice(setupVoiceElement(track.src, track, runId), runId);
+        if (runId !== voiceRunId) return;
         voiceUnlocked = true;
         voiceAwaitingGesture = false;
       } catch (error) {
+        if (error && error.message === "voice-cancelled") return;
         if (auto) {
+          if (runId !== voiceRunId) return;
           voiceUnlocked = false;
           voiceAwaitingGesture = true;
           showVoiceCaption("点一下页面，即可解锁每幕自动配音。");
         } else if (error && (error.name === "NotAllowedError" || error.name === "AbortError")) {
+          if (runId !== voiceRunId) return;
           voiceUnlocked = false;
           voiceAwaitingGesture = true;
           showVoiceCaption("浏览器拦截了配音，再点一下页面即可解锁。");
         } else {
           try {
             stopVoice();
+            if (runId !== voiceRunId) return;
             showVoiceCaption("正在切换兼容播放通道…", true);
             const blobUrl = await fetchVoiceAsBlobUrl(track.src);
-            await playPreparedVoice(setupVoiceElement(blobUrl, track, true));
+            if (runId !== voiceRunId) return;
+            await playPreparedVoice(setupVoiceElement(blobUrl, track, runId, true), runId);
+            if (runId !== voiceRunId) return;
             voiceUnlocked = true;
             voiceAwaitingGesture = false;
           } catch (fallbackError) {
+            if (fallbackError && fallbackError.message === "voice-cancelled") return;
+            if (runId !== voiceRunId) return;
             voiceAwaitingGesture = false;
             duckBgm(false);
             showVoiceCaption("当前浏览器暂不支持这段配音格式，可换 Safari / Chrome 打开。");
@@ -3494,6 +3528,7 @@
 
     function setStage(next) {
       if (stage === next) return;
+      cancelVoicePlayback();
       stage = next;
       stageTime = performance.now();
       body.dataset.stage = String(next);
