@@ -500,6 +500,24 @@
       transform:translate3d(calc((var(--mx) - 50vw) * .018),calc((var(--my) - 50vh) * .018),0);
       transition:transform .15s linear;
     }
+    section:after{
+      content:"";
+      position:absolute;
+      inset:-18%;
+      z-index:-1;
+      pointer-events:none;
+      opacity:0;
+      mix-blend-mode:screen;
+      background:
+        conic-gradient(from 0deg at 50% 50%,transparent,rgba(230,194,128,.14),transparent 22%,rgba(192,72,81,.1),transparent 52%,rgba(212,175,55,.12),transparent);
+      transform:scale(.88) rotate(-8deg);
+      transition:opacity 1.1s var(--ease),transform 1.1s var(--ease);
+    }
+    section.active:after{
+      opacity:.62;
+      transform:scale(1) rotate(0deg);
+      animation:stage-radiance 12s linear infinite;
+    }
     .content,
     .hero,
     .final{
@@ -525,6 +543,10 @@
       filter:blur(0);
       transform:translateY(0);
     }
+    .active h1,
+    .active h2{
+      animation:title-breathe 4.8s ease-in-out infinite;
+    }
     .d1{transition-delay:.15s}
     .d2{transition-delay:.34s}
     .d3{transition-delay:.55s}
@@ -539,6 +561,11 @@
       background:
         radial-gradient(circle at 23% 47%,rgba(192,72,81,.18),transparent 28%),
         radial-gradient(circle at 77% 42%,rgba(212,175,55,.16),transparent 30%);
+    }
+    .act1:after{
+      background:
+        conic-gradient(from 180deg at 50% 50%,rgba(192,72,81,.16),transparent 18%,rgba(230,194,128,.14),transparent 38%,rgba(192,72,81,.12),transparent 62%,rgba(212,175,55,.12),transparent),
+        linear-gradient(90deg,transparent 46%,rgba(255,232,184,.12) 50%,transparent 54%);
     }
     .wall-caption{
       position:absolute;
@@ -670,6 +697,12 @@
       background:linear-gradient(105deg,transparent 35%,rgba(230,194,128,.16) 47%,rgba(255,255,255,.18) 50%,rgba(192,72,81,.1) 54%,transparent 66%);
       transform:translateX(-58%) rotate(7deg);
       animation:card-sweep 5.8s var(--ease) infinite;
+    }
+    .active .story-card,
+    .active .final-card,
+    .active .metric-card,
+    .active .city{
+      animation:card-breathe 5.8s ease-in-out infinite;
     }
     .story-card:after{
       content:"";
@@ -836,6 +869,11 @@
         conic-gradient(from 120deg at 50% 50%,transparent,rgba(192,72,81,.12),transparent,rgba(212,175,55,.12),transparent);
       animation:slow-turn 24s linear infinite;
     }
+    .act2:after{
+      background:
+        radial-gradient(circle at 50% 50%,rgba(230,194,128,.22),transparent 22%),
+        conic-gradient(from 20deg at 50% 50%,transparent,rgba(192,72,81,.18),transparent 28%,rgba(212,175,55,.16),transparent 58%);
+    }
     .act2 .content{
       display:grid;
       grid-template-columns:minmax(0,1.02fr) minmax(320px,.78fr);
@@ -949,6 +987,11 @@
       background:
         radial-gradient(circle at 50% 43%,rgba(230,194,128,.16),transparent 30%),
         radial-gradient(circle at 50% 50%,transparent 0 30%,rgba(5,6,8,.75) 76%);
+    }
+    .act3:after{
+      background:
+        radial-gradient(circle at 50% 46%,rgba(255,240,194,.18),transparent 18%),
+        conic-gradient(from 60deg at 50% 46%,rgba(230,194,128,.16),transparent 18%,rgba(192,72,81,.18),transparent 44%,rgba(212,175,55,.16),transparent 70%);
     }
     .act3.active:before{
       animation:act3-bloom 7.5s ease-in-out infinite;
@@ -1072,15 +1115,32 @@
     .act4{
       padding-bottom:clamp(36px,5vh,68px);
     }
+    .act4:after{
+      background:
+        radial-gradient(circle at 50% 42%,rgba(230,194,128,.14),transparent 34%),
+        radial-gradient(circle at 23% 68%,rgba(192,72,81,.11),transparent 24%),
+        radial-gradient(circle at 78% 30%,rgba(212,175,55,.12),transparent 26%);
+    }
     .act5:before{
       background:
         radial-gradient(circle at 26% 55%,rgba(192,72,81,.2),transparent 25%),
         radial-gradient(circle at 74% 44%,rgba(212,175,55,.22),transparent 26%);
     }
+    .act5:after{
+      background:
+        linear-gradient(100deg,transparent 12%,rgba(192,72,81,.16),rgba(230,194,128,.18),rgba(212,175,55,.14),transparent 88%),
+        radial-gradient(circle at 27% 55%,rgba(192,72,81,.18),transparent 18%),
+        radial-gradient(circle at 73% 45%,rgba(212,175,55,.2),transparent 18%);
+    }
     .act6:before{
       background:
         radial-gradient(circle at 50% 38%,rgba(230,194,128,.22),transparent 28%),
         radial-gradient(circle at 50% 65%,rgba(192,72,81,.16),transparent 32%);
+    }
+    .act6:after{
+      background:
+        radial-gradient(circle at 50% 50%,rgba(230,194,128,.2),transparent 28%),
+        conic-gradient(from 0deg at 50% 50%,rgba(192,72,81,.16),transparent 18%,rgba(230,194,128,.2),transparent 38%,rgba(212,175,55,.16),transparent 70%);
     }
     .wide-scene{
       width:min(1100px,91vw);
@@ -1389,6 +1449,17 @@
     @keyframes pulse{
       0%,100%{transform:scale(1);opacity:.95}
       50%{transform:scale(.72);opacity:.45}
+    }
+    @keyframes stage-radiance{
+      to{transform:scale(1) rotate(360deg)}
+    }
+    @keyframes title-breathe{
+      0%,100%{filter:drop-shadow(0 0 0 rgba(230,194,128,0)) brightness(1)}
+      50%{filter:drop-shadow(0 0 18px rgba(230,194,128,.34)) brightness(1.12)}
+    }
+    @keyframes card-breathe{
+      0%,100%{box-shadow:inset 0 0 0 1px rgba(255,255,255,.035),0 28px 80px rgba(0,0,0,.26),0 0 0 rgba(212,175,55,0)}
+      50%{box-shadow:inset 0 0 0 1px rgba(255,255,255,.055),0 34px 92px rgba(0,0,0,.3),0 0 44px rgba(212,175,55,.1)}
     }
     @keyframes act3-bloom{
       0%,100%{opacity:.58;filter:hue-rotate(0deg) brightness(1)}
@@ -1974,6 +2045,181 @@
     }
     body.landscape-simulated .day-count b{
       font-size:58px;
+    }
+    @media (orientation:landscape) and (max-height:460px){
+      section{
+        padding:18px 38px 12px;
+      }
+      .topbar{
+        padding:9px 18px;
+      }
+      .hero,
+      .act2 .content{
+        grid-template-columns:minmax(0,.9fr) minmax(300px,1fr);
+        gap:18px;
+      }
+      .act2 .content{
+        grid-template-columns:minmax(0,1fr) 210px;
+      }
+      .kicker{
+        margin-bottom:5px;
+        font-size:8px;
+        line-height:1.45;
+      }
+      .hero-title h1,
+      .act2 h2,
+      .final h2,
+      .wide-scene h2{
+        font-size:clamp(25px,9.8vh,40px);
+        line-height:1.02;
+      }
+      .hero-title .subtitle{
+        margin-top:8px;
+        font-size:10px;
+        line-height:1.48;
+      }
+      .chat-constellation{
+        gap:5px;
+        margin-top:8px;
+      }
+      .chat-chip{
+        padding:4px 7px;
+        font-size:8px;
+      }
+      .story-card,
+      .final-card{
+        padding:10px 12px;
+        max-height:calc(100svh - 42px);
+      }
+      .story-copy,
+      .final-card .story-copy{
+        font-size:9.6px;
+        line-height:1.4;
+      }
+      .dialogue-lines{
+        gap:4px;
+        margin:.45em 0;
+      }
+      .dialogue-row{
+        padding:5px 8px 5px 10px;
+      }
+      .year-engine{
+        min-height:150px;
+      }
+      .orbit{
+        width:142px;
+      }
+      .day-count b{
+        font-size:48px;
+      }
+      .wide-scene{
+        width:min(980px,94vw);
+      }
+      .wide-copy{
+        max-width:720px;
+        font-size:9.6px;
+        line-height:1.42;
+      }
+      .portrait-filmstrip{
+        margin-top:7px;
+        gap:7px;
+      }
+      .portrait-card{
+        width:46px;
+      }
+      .portrait-card:nth-child(2){
+        width:56px;
+      }
+      .metric-grid{
+        gap:7px;
+        margin-top:8px;
+      }
+      .metric-card{
+        min-height:62px;
+        padding:7px 7px;
+      }
+      .metric-card b{
+        margin-bottom:5px;
+        font-size:22px;
+      }
+      .metric-card span{
+        font-size:7.6px;
+        line-height:1.25;
+      }
+      .city-line{
+        margin-top:12px;
+        gap:42px;
+      }
+      .city{
+        min-height:106px;
+        padding:12px;
+      }
+      .city b{
+        margin-bottom:5px;
+        font-size:28px;
+      }
+      .city span{
+        font-size:9px;
+        line-height:1.35;
+      }
+      .closing-sigil{
+        width:118px;
+        margin-top:8px;
+      }
+      .closing-sigil span{
+        font-size:28px;
+      }
+      .final-portrait{
+        width:58px;
+        opacity:.14;
+      }
+      .seal,
+      .act-no{
+        opacity:.42;
+      }
+    }
+    body.landscape-simulated section{
+      padding:18px 38px 12px;
+    }
+    body.landscape-simulated .hero,
+    body.landscape-simulated .act2 .content{
+      gap:18px;
+    }
+    body.landscape-simulated .kicker{
+      margin-bottom:5px;
+      font-size:8px;
+      line-height:1.45;
+    }
+    body.landscape-simulated .hero-title h1,
+    body.landscape-simulated .act2 h2,
+    body.landscape-simulated .final h2,
+    body.landscape-simulated .wide-scene h2{
+      font-size:clamp(25px,9.8svh,40px);
+      line-height:1.02;
+    }
+    body.landscape-simulated .wide-copy{
+      max-width:720px;
+      font-size:9.6px;
+      line-height:1.42;
+    }
+    body.landscape-simulated .metric-card{
+      min-height:62px;
+      padding:7px;
+    }
+    body.landscape-simulated .metric-card b{
+      margin-bottom:5px;
+      font-size:22px;
+    }
+    body.landscape-simulated .metric-card span{
+      font-size:7.6px;
+      line-height:1.25;
+    }
+    body.landscape-simulated .city{
+      min-height:106px;
+      padding:12px;
+    }
+    body.landscape-simulated .closing-sigil{
+      width:118px;
     }
     @media (prefers-reduced-motion:reduce){
       html{scroll-behavior:auto}
@@ -3354,7 +3600,60 @@
       ctx.restore();
     }
 
+    function drawStageRays(now) {
+      const t = now * .001;
+      const cx = stage === 5 ? W / 2 : stage === 4 ? W * .5 : W / 2;
+      const cy = stage === 0 ? H * .5 : stage === 1 ? H * .5 : stage === 2 ? H * .46 : stage === 3 ? H * .48 : stage === 4 ? H * .5 : H * .5;
+      const base = Math.min(W, H);
+      const beams = stage === 3 && (isMobile || body.classList.contains("landscape-simulated")) ? 6 : 10;
+      const alpha = stage === 3 && (isMobile || body.classList.contains("landscape-simulated")) ? .06 : .12;
+      ctx.save();
+      ctx.globalCompositeOperation = "screen";
+      for (let i = 0; i < beams; i++) {
+        const a = i / beams * TAU + t * (.06 + stage * .008) * (i % 2 ? -1 : 1);
+        const inner = base * (.08 + .02 * Math.sin(t + i));
+        const outer = base * (.58 + .04 * Math.sin(t * .7 + i));
+        const tint = i % 3 === 0 ? RED : GOLD;
+        const grad = ctx.createLinearGradient(
+          cx + Math.cos(a) * inner,
+          cy + Math.sin(a) * inner,
+          cx + Math.cos(a) * outer,
+          cy + Math.sin(a) * outer
+        );
+        grad.addColorStop(0, color(tint, alpha * 1.35));
+        grad.addColorStop(.55, color(tint, alpha));
+        grad.addColorStop(1, color(tint, 0));
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = i % 4 === 0 ? 1.4 : .65;
+        ctx.shadowBlur = stage === 3 ? 4 : 12;
+        ctx.shadowColor = tint === RED ? "#c04851" : "#d4af37";
+        ctx.beginPath();
+        ctx.moveTo(cx + Math.cos(a) * inner, cy + Math.sin(a) * inner);
+        ctx.lineTo(cx + Math.cos(a) * outer, cy + Math.sin(a) * outer);
+        ctx.stroke();
+      }
+      if (stage === 0 || stage === 1) {
+        const wall = W / 2;
+        for (let k = 0; k < 3; k++) {
+          const y = H * (.28 + k * .18) + Math.sin(t * 1.1 + k) * H * .025;
+          const grad = ctx.createLinearGradient(0, y, W, y);
+          grad.addColorStop(0, "rgba(192,72,81,0)");
+          grad.addColorStop(.48, `rgba(230,194,128,${stage === 0 ? .12 : .18})`);
+          grad.addColorStop(.52, `rgba(192,72,81,${stage === 0 ? .1 : .16})`);
+          grad.addColorStop(1, "rgba(212,175,55,0)");
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(wall - W * .42, y);
+          ctx.bezierCurveTo(wall - W * .18, y - 24, wall + W * .18, y + 24, wall + W * .42, y);
+          ctx.stroke();
+        }
+      }
+      ctx.restore();
+    }
+
     function drawStageAmplifiers(now) {
+      drawStageRays(now);
       drawInkCrystal(now);
       drawConstellationField(now);
       drawCityGravity(now);
@@ -3538,34 +3837,35 @@
       railDots.forEach((dot, i) => dot.classList.toggle("on", i === next));
       if (next === 1) {
         animateDays();
-        addShockwave(W / 2, H / 2, GOLD, 1.15);
-        emitSpark(W / 2, H / 2, 82, GOLD);
+        addShockwave(W / 2, H / 2, GOLD, 1.65);
+        addShockwave(W / 2, H / 2, RED, 1.05);
+        emitSpark(W / 2, H / 2, 130, GOLD);
       }
       if (next >= 2) {
-        addShockwave(W / 2, H * .46, RED, 1.35);
-        addShockwave(W / 2, H * .46, GOLD, 1.75);
-        emitSpark(W / 2, H * .46, 130, GOLD);
+        addShockwave(W / 2, H * .46, RED, 1.65);
+        addShockwave(W / 2, H * .46, GOLD, 2.05);
+        emitSpark(W / 2, H * .46, 170, GOLD);
       }
       if (next === 2) {
-        addShockwave(W / 2, H * .46, GOLD, 2.4);
-        emitSpark(W / 2, H * .46, 220, RED);
+        addShockwave(W / 2, H * .46, GOLD, 2.9);
+        emitSpark(W / 2, H * .46, 260, RED);
       }
       if (next === 3) {
         for (let i = 0; i < 4; i++) {
-          addShockwave(W * (.2 + i * .2), H * (.32 + (i % 2) * .28), i % 2 ? RED : GOLD, 1.05);
+          addShockwave(W * (.2 + i * .2), H * (.32 + (i % 2) * .28), i % 2 ? RED : GOLD, 1.25);
         }
-        emitSpark(W / 2, H * .5, 240, GOLD);
+        emitSpark(W / 2, H * .5, 260, GOLD);
       }
       if (next === 4) {
-        addShockwave(W * .27, H * .55, RED, 1.35);
-        addShockwave(W * .73, H * .45, GOLD, 1.35);
-        emitSpark(W * .27, H * .55, 110, RED);
-        emitSpark(W * .73, H * .45, 110, GOLD);
+        addShockwave(W * .27, H * .55, RED, 1.75);
+        addShockwave(W * .73, H * .45, GOLD, 1.75);
+        emitSpark(W * .27, H * .55, 150, RED);
+        emitSpark(W * .73, H * .45, 150, GOLD);
       }
       if (next === 5) {
-        addShockwave(W / 2, H * .5, GOLD, 2.85);
-        addShockwave(W / 2, H * .5, RED, 2.1);
-        emitSpark(W / 2, H * .5, 280, GOLD);
+        addShockwave(W / 2, H * .5, GOLD, 3.35);
+        addShockwave(W / 2, H * .5, RED, 2.45);
+        emitSpark(W / 2, H * .5, 340, GOLD);
       }
       playVoiceForStage(next, false);
       if (next === 0) {
