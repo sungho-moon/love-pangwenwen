@@ -6,6 +6,9 @@
   <meta name="theme-color" content="#08080a">
   <meta name="description" content="写给庞雯文的一封数字回信：从初三那年错身的平行线，到如今《上林赋》的回响。">
   <title>上林回响 · 致庞雯文</title>
+  <link rel="preload" href="voice/scene-1.m4a" as="audio" type="audio/mp4">
+  <link rel="preload" href="voice/scene-2.m4a" as="audio" type="audio/mp4">
+  <link rel="preload" href="voice/scene-3.m4a" as="audio" type="audio/mp4">
   <style>
     :root{
       --void:#08080a;
@@ -2630,6 +2633,10 @@
           voiceUnlocked = false;
           voiceAwaitingGesture = true;
           showVoiceCaption("点一下页面，即可解锁每幕自动配音。");
+        } else if (error && (error.name === "NotAllowedError" || error.name === "AbortError")) {
+          voiceUnlocked = false;
+          voiceAwaitingGesture = true;
+          showVoiceCaption("浏览器拦截了配音，再点一下页面即可解锁。");
         } else {
           voiceAwaitingGesture = false;
           showVoiceCaption(`配音文件待放入：${track.src}`);
@@ -2734,17 +2741,20 @@
 
     async function startIntroExperience() {
       body.classList.add("intro-launching");
-      const bgmPromise = startBgm();
-      await requestLandscapeImmersion();
       body.classList.add("intro-complete");
       body.classList.remove("intro-launching");
       scrollToStageStart();
       setStage(0);
-      await bgmPromise;
       voiceEnabled = true;
       voiceUnlocked = true;
+      voiceAwaitingGesture = false;
       setVoiceButtonState();
-      await playVoiceForStage(stage, false);
+      const bgmPromise = startBgm();
+      const voicePromise = playVoiceForStage(0, false);
+      const landscapePromise = requestLandscapeImmersion();
+      await Promise.allSettled([bgmPromise, voicePromise, landscapePromise]);
+      scrollToStageStart();
+      setStage(0);
       setTimeout(resize, 320);
     }
 
